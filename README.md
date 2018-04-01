@@ -1,2 +1,3 @@
 # makefileGeneratorC
-A small makefile Generator for C projects.
+This is a small, portable makefile Generator for C projects.
+
