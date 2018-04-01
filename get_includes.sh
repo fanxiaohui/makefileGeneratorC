@@ -10,4 +10,6 @@ for ligne in $(<"filter.txt")
 do
   echo ${ligne:9} >> true_libraries.txt
 done
+
+rm libraries.txt filter.txt
 exit
