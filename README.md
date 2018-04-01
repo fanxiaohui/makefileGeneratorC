@@ -1,8 +1,9 @@
 # A small and portable Makefile Generator for C project
+###### This project isn't fully functionnal yet !
 
 ## Installation
 
-**Just download this project, place it in your C project directory and execute "install.sh". For now the makefile generator only support C project whose files are all in the same folder.**
+**Just download this project, place it in your C project directory and execute *install.sh*. For now the makefile generator only support C project whose files are all in the same folder.**
 
 ## How to use it
 
@@ -11,7 +12,7 @@ Here is an example.
 Assuming you have two files, *main.c* and *hello.c* .
 
 ###### main.c
-```
+```c
 #include "hello.h"
 
 int main(void){
@@ -21,7 +22,7 @@ int main(void){
 ```
 
 ###### hello.c
-```
+```c
 #include <stdio.h>
 
 void printHello(){
