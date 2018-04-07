@@ -718,6 +718,15 @@ static char *ReadFile(const char *zFilename){
   return zBuf;
 }
 
+char* getFileNameWithoutExtension(const char* fileName){
+  long lengthOfFileName = strlen(fileName);
+  char* nameWithoutExtension = malloc(lengthOfFileName - 2);
+  memcpy(nameWithoutExtension , fileName, lengthOfFileName - 2);
+  strcat(nameWithoutExtension , "\n");
+  return nameWithoutExtension;
+}
+
+
 /*
 ** Write the contents of a string into a file.  Return the number of
 ** errors
@@ -728,14 +737,17 @@ static int WriteFile(const char *zFilename, const char *zOutput){
   if( pOut==0 ){
     return 1;
   }
-  char* tmp = calloc(1, strlen(zFilename) + 5);
-  strcat(strcat(tmp, "#ifndef "), zFilename);
 
-  fwrite(tmp, 1, strlen(zFilename) + strlen("#ifndef "),pOut);
+  char* nameWithoutExtension = getFileNameWithoutExtension(zFilename);
+
+  char* tmp = calloc(1, strlen(nameWithoutExtension) + 5);
+  strcat(strcat(tmp, "#ifndef "), nameWithoutExtension);
+
+  fwrite(tmp, 1, strlen(nameWithoutExtension) + strlen("#ifndef "),pOut);
 
   memset(tmp, 0x0, strlen(tmp));
-  strcat(strcat(tmp, "\n#define "), zFilename);
-  fwrite(tmp, 1, strlen(zFilename) + strlen("\n#define "),pOut);
+  strcat(strcat(tmp, "\n#define "), nameWithoutExtension);
+  fwrite(tmp, 1, strlen(nameWithoutExtension) + strlen("\n#define "),pOut);
 
   fwrite(zOutput,1,strlen(zOutput),pOut);
   fwrite("#endif", 1, strlen("#endif"),pOut);
