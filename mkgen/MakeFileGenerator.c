@@ -39,8 +39,12 @@ int f_flag = FALSE;
 #endif
 
 
+<<<<<<< HEAD
 //TODO when checking if file is a .c, check if the .c is at the end of the name
 //ex : c.cfg shouldn't be considered as .c file, whereas file.c should
+=======
+
+>>>>>>> bfc7e922a8d8b57d792b538a1dc6839e2e812905
 
 typedef struct fileInformations{
   char* name;
@@ -187,7 +191,12 @@ void deleteHeaderFromFile(const char* filePath){
 void generateH(const char* filePath){
   long lengthOfFileName = strlen(filePath);
 
+<<<<<<< HEAD
   char* headerFileName = safeMemoryAllocation(lengthOfFileName, 1);
+=======
+  char* headerFileName = malloc(lengthOfFileName);
+  memset(headerFileName, 0x0, lengthOfFileName);
+>>>>>>> bfc7e922a8d8b57d792b538a1dc6839e2e812905
   strncpy(headerFileName, filePath, lengthOfFileName);
   DEBUG_PRINT("Generating .h from %s\n", headerFileName);
   if(createHFileFromC(headerFileName) == -1){
@@ -268,11 +277,18 @@ int main(int argc, char const *argv[]) {
     DEBUG_PRINT("\n============= %s =============\n", filesInCurrDir.arrayOfFiles[i].name);
     DEBUG_PRINT("date = %ld\n", filesInCurrDir.arrayOfFiles[i].date);
     DEBUG_PRINT("File name without extension = %s\n", filesInCurrDir.arrayOfFiles[i].nameWithoutExtension);
+<<<<<<< HEAD
     //int fileNeedsToBeRemake = 1;
 
     //if(f_flag == FALSE) fileNeedsToBeRemake = (hasItBeenModified(filesInCurrDir.arrayOfFiles[i]));
 
     if(TRUE/*f_flag == TRUE || fileNeedsToBeRemake*/){
+=======
+    int fileNeedsToBeRemake = 1;
+    if(f_flag == FALSE) fileNeedsToBeRemake = (hasItBeenModified(filesInCurrDir.arrayOfFiles[i]));
+
+    if(fileNeedsToBeRemake){
+>>>>>>> bfc7e922a8d8b57d792b538a1dc6839e2e812905
       if(f_flag == FALSE) {
         DEBUG_PRINT(ANSI_COLOR_YELLOW"File has been modified, it is going to be remake.\n"ANSI_COLOR_RESET);
       }
