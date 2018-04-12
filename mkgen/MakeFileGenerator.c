@@ -12,9 +12,10 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-#define KGRN  "\x1B[32m" //Green color output
-#define KNRM  "\x1B[0m"  //Normal color output
-#define KRED  "\x1B[31m" //Red color output
+#define ANSI_COLOR_GREEN  "\x1B[32m" //Green color output
+#define ANSI_COLOR_RESET  "\x1B[0m"  //Normal color output
+#define ANSI_COLOR_RED  "\x1B[31m" //Red color output
+#define ANSI_COLOR_YELLOW  "\x1B[33m" //yellow color output
 
 #define TRUE 1
 #define FALSE 0
@@ -25,14 +26,19 @@
 #define MAX_FOLDER_PATH_SIZE 2048
 
 #define BUFF_SIZE 2048
-
+int quiet = TRUE;
+int h_flag = FALSE;
+int f_flag = FALSE;
 #define DEBUG
+/*Flags*/
 
 #ifdef DEBUG
-#define DEBUG_PRINT printf
+#define DEBUG_PRINT if(quiet == FALSE) printf
 #else
 #define DEBUG_PRINT(...)
 #endif
+
+
 
 
 typedef struct fileInformations{
@@ -112,12 +118,26 @@ filesOfDirectory getCFilesInDirectory(const char* dirpath){
 /*In : base file name without extension*/
 void deleteHeaderFromFile(const char* filePath){
   long lengthOfFileName = strlen(filePath);
-  char* headerFileName = malloc(lengthOfFileName + 2);
+  char* headerFileName = calloc(1,lengthOfFileName + 2);
   memcpy(headerFileName , filePath, lengthOfFileName + 2);
   strcat(headerFileName, ".h");
   unlink(headerFileName);
+  DEBUG_PRINT("Unlinked header file %s\n", headerFileName);
 }
 
+void generateH(const char* filePath){
+  long lengthOfFileName = strlen(filePath);
+
+  char* headerFileName = malloc(lengthOfFileName);
+  memset(headerFileName, 0x0, lengthOfFileName);
+  strncpy(headerFileName, filePath, lengthOfFileName);
+  DEBUG_PRINT("Generating .h from %s\n", headerFileName);
+  if(createHFileFromC(headerFileName) == -1){
+    DEBUG_PRINT(ANSI_COLOR_RED"Error during header's generation\n"ANSI_COLOR_RESET);
+  } else {
+    DEBUG_PRINT(ANSI_COLOR_GREEN"Header has been successfuly generated\n"ANSI_COLOR_RESET);
+  }
+}
 
 /*Returns boolean if file exists or not*/
 int isFileExisting(const char * filePath){
@@ -154,29 +174,56 @@ int hasItBeenModified(const fileInformations fileInfo){
   return FALSE;
 }
 
+static void showHelp(const char *argv0){
+  fprintf(stdout,"Usage: %s [options]...\n"
+    "Options:\n"
+    "  -f          (force)   Force all header files te be re-generated\n"
+    "  -h          (help)    Display help\n"
+    "  -v          (verbose) Write status information to the screen.\n",
+    argv0
+  );
+}
 
 int main(int argc, char const *argv[]) {
+
+  for(int i = 1; i < argc; i++){
+    if( argv[i][0] == '-' ){
+      switch( argv[i][1] ){
+        case 'v' : quiet = FALSE; break;
+        case 'f' : f_flag = TRUE; break;
+        case 'h': h_flag = TRUE; showHelp(argv[0]); return 1;
+        case 'H': h_flag = TRUE; showHelp(argv[0]); return 1;
+        default: showHelp(argv[0]); return 1;
+      }
+    }
+  }
+  if(f_flag == TRUE) DEBUG_PRINT("\nForcing re-generation\n");
   filesOfDirectory filesInCurrDir = getCFilesInDirectory(PROJECT_DIRECTORY);
-  //printf("name %s\n", filesInCurrDir.arrayOfFiles[0].name);
   printf("Number of C files in your directory = %ld\n", filesInCurrDir.numberOfFiles);
-  //printMD5(filesInCurrDir.arrayOfFiles[0].MD5Sum);
+
 
   for(int i = 0; i < filesInCurrDir.numberOfFiles ; i++){
+
     DEBUG_PRINT("\n============= %s =============\n", filesInCurrDir.arrayOfFiles[i].name);
     DEBUG_PRINT("date = %ld\n", filesInCurrDir.arrayOfFiles[i].date);
+    DEBUG_PRINT("File name without extension = %s\n", filesInCurrDir.arrayOfFiles[i].nameWithoutExtension);
+    int fileNeedsToBeRemake = 1;
+    if(f_flag == FALSE) fileNeedsToBeRemake = (hasItBeenModified(filesInCurrDir.arrayOfFiles[i]));
 
-    int fileNeedsToBeRemake = (hasItBeenModified(filesInCurrDir.arrayOfFiles[i]));
     if(fileNeedsToBeRemake){
-      DEBUG_PRINT(KRED"File has been modified, it is going to be remake.\n"KNRM);
+      if(f_flag == FALSE) {
+        DEBUG_PRINT(ANSI_COLOR_YELLOW"File has been modified, it is going to be remake.\n"ANSI_COLOR_RESET);
+      }
+      else DEBUG_PRINT(ANSI_COLOR_YELLOW"Forcing re-generation.\n"ANSI_COLOR_RESET);
       deleteHeaderFromFile(filesInCurrDir.arrayOfFiles[i].nameWithoutExtension);
-      createHFileFromC(filesInCurrDir.arrayOfFiles[i].name);
+      generateH(filesInCurrDir.arrayOfFiles[i].name);
       saveDate(filesInCurrDir.arrayOfFiles[i]);
     } else {
-      DEBUG_PRINT(KGRN"File hasn't been modified.\n"KNRM);
+      DEBUG_PRINT(ANSI_COLOR_GREEN"File hasn't been modified.\n"ANSI_COLOR_RESET);
     }
   }
   putchar('\n');
-  printf(KGRN"\t====Done ! The makefile is ready !====\n"KNRM);
+  printf(ANSI_COLOR_GREEN"\t====Done ! The makefile is ready !====\n"ANSI_COLOR_RESET);
   /*if(system("make") == -1){
     perror("Couldn't spawn shell to make");
     exit(errno);
