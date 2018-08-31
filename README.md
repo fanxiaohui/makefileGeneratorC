@@ -7,27 +7,17 @@
 
 ## How to use it
 
-All you need to do is **include the dependences you need into you .c files**.
-Here is an example.
-Assuming you have two files, *main.c* and *hello.c* .
-
-###### main.c
-```c
-#include "hello.h"
-
-int main(void){
-  printHello();
-  exit(1);
-}
+First, you need to recompile MakeFileGenerator.c and makeheaders.c on your own using : 
+```BASH
+cd mkgen
+gcc -c MakeFileGenerator.c ; gcc -c makeheaders.c
+gcc -o mkgen MakeFileGenerator.o makeheaders.o
 ```
-
-###### hello.c
-```c
-#include <stdio.h>
-
-void printHello(){
-  printf("Hello !\n");
-}
+All you need from now is to execute ./mkgen/mkgen from your project folder. 
+For example, you should execute it from the directory "sampleProject". All .h will be automatically created. Then, just copy the "makefile" file into your project folder and you'll be good to go. 
+Each time you need to regenerate .h, launch mkgen. 
+The makefile needs to be copied only once into your project folder. 
+You should be able to execute your project using : 
+```BASH
+make prog
 ```
-
-Once then, all you need to do is execute *generate.sh*, to automatically update your makefile project (which will be overwritten) if it already exsists, or create it if it does not.
