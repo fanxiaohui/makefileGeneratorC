@@ -1,5 +1,5 @@
 # A small and portable Makefile Generator for C project
-###### This project is functionnal but it will be updated soon
+###### This project is functionnal but it will be updated soon. Only works on linux.
 
 ## Installation
 
