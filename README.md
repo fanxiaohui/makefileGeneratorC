@@ -3,7 +3,7 @@
 
 ## Installation
 
-**Just download this project, place it in your C project directory and execute *install.sh*. For now the makefile generator only support C project whose files are all in the same folder.**
+**All you ened to do is to clone this repo and recompile .c files in mkgen folder.
 
 ## How to use it
 
@@ -20,4 +20,4 @@ The makefile needs to be copied only once into your project folder.
 You should be able to execute your project using : 
 ```BASH
 make prog
-```
+
