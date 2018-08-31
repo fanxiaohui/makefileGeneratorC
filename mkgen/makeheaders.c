@@ -718,12 +718,30 @@ static char *ReadFile(const char *zFilename){
   return zBuf;
 }
 
-char* getFileNameWithoutExtension(const char* fileName){
+
+char* toUpperCase(char* array, const int arrLength){
+  for(int i = 0; i < arrLength; i++){
+    char isCharADot = (array[i] == '.');
+    if(isCharADot){
+      array[i] = '_';
+    }
+    else if (array[i] <= 'z' && array[i] >= 'a') {
+      array[i] = array[i] - 32;
+    }
+    
+  }
+  return array;
+}
+
+char* getHeaderNameFromFileName(const char* fileName){
   long lengthOfFileName = strlen(fileName);
-  char* nameWithoutExtension = malloc(lengthOfFileName - 2);
-  memcpy(nameWithoutExtension , fileName, lengthOfFileName - 2);
+  long numberOfCharsInFileName = lengthOfFileName;
+
+  char* nameWithoutExtension = calloc(numberOfCharsInFileName, sizeof(char));
+  memcpy(nameWithoutExtension , fileName, numberOfCharsInFileName);
   strcat(nameWithoutExtension , "\n");
-  return nameWithoutExtension;
+
+  return toUpperCase(nameWithoutExtension, lengthOfFileName);
 }
 
 
@@ -738,16 +756,16 @@ static int WriteFile(const char *zFilename, const char *zOutput){
     return 1;
   }
 
-  char* nameWithoutExtension = getFileNameWithoutExtension(zFilename);
+  char* nameWithoutExtension = getHeaderNameFromFileName(zFilename);
 
   char* tmp = calloc(1, strlen(nameWithoutExtension) + 5);
-  strcat(strcat(tmp, "#ifndef "), nameWithoutExtension);
+  strcat(strcat(tmp, "#ifndef \0"), nameWithoutExtension);
 
-  fwrite(tmp, 1, strlen(nameWithoutExtension) + strlen("#ifndef "),pOut);
+  fwrite(tmp, 1, strlen(nameWithoutExtension) + strlen("#ifndef \0"),pOut);
 
   memset(tmp, 0x0, strlen(tmp));
-  strcat(strcat(tmp, "\n#define "), nameWithoutExtension);
-  fwrite(tmp, 1, strlen(nameWithoutExtension) + strlen("\n#define "),pOut);
+  strcat(strcat(tmp, "#define "), nameWithoutExtension);
+  fwrite(tmp, 1, strlen(nameWithoutExtension) + strlen("#define "),pOut);
 
   fwrite(zOutput,1,strlen(zOutput),pOut);
   fwrite("#endif", 1, strlen("#endif"),pOut);
