@@ -3,7 +3,7 @@
 
 ## Installation
 
-**All you ened to do is to clone this repo and recompile .c files in mkgen folder.
+**All you need to do is to clone this repo and recompile .c files in mkgen folder.**
 
 ## How to use it
 
@@ -17,7 +17,4 @@ All you need from now is to execute ./mkgen/mkgen from your project folder.
 For example, you should execute it from the directory "sampleProject". All .h will be automatically created. Then, just copy the "makefile" file into your project folder and you'll be good to go. 
 Each time you need to regenerate .h, launch mkgen. 
 The makefile needs to be copied only once into your project folder. 
-You should be able to execute your project using : 
-```BASH
-make prog
-
+ 
